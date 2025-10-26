@@ -16,7 +16,6 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import { Download, TrendingUp, Award, Eye } from 'lucide-react';
 import type { ExperimentResponse } from '@/lib/api';
 
 interface ResultsDisplayProps {
@@ -25,8 +24,6 @@ interface ResultsDisplayProps {
 
 export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
   const [selectedResponse, setSelectedResponse] = useState(experiment.responses[0]);
-  const [compareMode, setCompareMode] = useState(false);
-  const [compareWith, setCompareWith] = useState<typeof selectedResponse | null>(null);
 
   // Prepare data for metrics comparison chart
   const metricsChartData = experiment.responses.map((resp) => ({
@@ -82,30 +79,25 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
       <div className="flex items-center justify-between glass p-6 rounded-2xl">
         <div>
           <h2 className="text-3xl font-bold gradient-text mb-2">Experiment Results</h2>
-          <p className="text-sm text-purple-700 font-medium flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+          <p className="text-sm text-purple-700 font-medium">
             Generated {experiment.responses.length} responses
           </p>
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-6 py-3 btn-gradient-success text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+          className="px-6 py-3 btn-gradient-success text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
         >
-          <Download className="w-5 h-5" />
           Export JSON
         </button>
       </div>
 
       {/* Best Response Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 text-white p-6 rounded-2xl shadow-2xl card-hover">
+      <div className="relative overflow-hidden bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 text-white p-6 rounded-2xl shadow-2xl card-hover">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
         <div className="relative flex items-center gap-4">
-          <div className="bg-white bg-opacity-20 p-4 rounded-2xl backdrop-blur-sm">
-            <Award className="w-10 h-10 flex-shrink-0" />
-          </div>
           <div>
-            <p className="text-2xl font-bold mb-1">🏆 Best Response</p>
+            <p className="text-2xl font-bold mb-1">Best Response</p>
             <p className="text-sm text-yellow-100 font-medium">
               Temperature: <span className="font-bold">{bestResponse.temperature}</span> • 
               Top P: <span className="font-bold">{bestResponse.top_p}</span> • 
@@ -117,10 +109,7 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
 
       {/* Overall Metrics Chart */}
       <div className="glass p-6 rounded-2xl shadow-xl card-hover">
-        <h3 className="text-xl font-bold mb-4 flex items-center gap-3 text-gray-800">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-white" />
-          </div>
+        <h3 className="text-xl font-bold mb-4 text-gray-800">
           Overall Quality Comparison
         </h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -150,10 +139,7 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
 
       {/* Response Selector */}
       <div className="glass p-6 rounded-2xl shadow-xl">
-        <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></span>
-          Select Response to Analyze
-        </h3>
+        <h3 className="text-xl font-bold mb-4 text-gray-800">Select Response to Analyze</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {experiment.responses.map((resp) => (
             <button
@@ -179,10 +165,7 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Radar Chart */}
         <div className="glass p-6 rounded-2xl shadow-xl card-hover">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></span>
-            Quality Metrics Breakdown
-          </h3>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">Quality Metrics Breakdown</h3>
           <ResponsiveContainer width="100%" height={300}>
             <RadarChart data={radarData}>
               <PolarGrid stroke="#c7d2fe" />
@@ -201,10 +184,7 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
 
         {/* Metrics Cards */}
         <div className="glass p-6 rounded-2xl shadow-xl card-hover">
-          <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-teal-500"></span>
-            Individual Metrics
-          </h3>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">Individual Metrics</h3>
           <div className="space-y-4">
             {selectedResponse.metrics &&
               Object.entries(selectedResponse.metrics).map(([key, value]) => {
@@ -240,12 +220,7 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
       {/* Response Content */}
       <div className="glass p-8 rounded-2xl shadow-xl card-hover">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold flex items-center gap-3 text-gray-800">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg">
-              <Eye className="w-6 h-6 text-white" />
-            </div>
-            Response Content
-          </h3>
+          <h3 className="text-xl font-bold text-gray-800">Response Content</h3>
           <div className="text-sm font-semibold bg-gradient-to-r from-purple-100 to-pink-100 px-4 py-2 rounded-full text-purple-700">
             T: {selectedResponse.temperature} • P: {selectedResponse.top_p}
           </div>
@@ -257,14 +232,13 @@ export default function ResultsDisplay({ experiment }: ResultsDisplayProps) {
         </div>
         <div className="mt-4 flex items-center gap-3 text-xs font-semibold text-purple-700">
           <span className="bg-purple-100 px-3 py-1.5 rounded-full">
-            📝 Word count: {selectedResponse.content.split(/\s+/).length}
+            Word count: {selectedResponse.content.split(/\s+/).length}
           </span>
           <span className="bg-pink-100 px-3 py-1.5 rounded-full">
-            📊 Character count: {selectedResponse.content.length}
+            Character count: {selectedResponse.content.length}
           </span>
         </div>
       </div>
     </div>
   );
 }
-

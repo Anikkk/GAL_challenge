@@ -1,7 +1,6 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, Trash2, Eye, RefreshCw } from 'lucide-react';
 import { deleteExperiment, getExperiment, type ExperimentListItem } from '@/lib/api';
 
 interface ExperimentHistoryProps {
@@ -49,14 +48,12 @@ export default function ExperimentHistory({
   if (experiments.length === 0) {
     return (
       <div className="glass p-12 rounded-2xl shadow-xl text-center card-hover">
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-          <Clock className="w-12 h-12 text-white" />
+        <div className="bg-gradient-to-r from-indigo-500 to-sky-500 w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-white text-lg font-semibold tracking-widest uppercase">
+          LLM
         </div>
-        <h3 className="text-2xl font-bold gradient-text mb-3">
-          No Experiments Yet
-        </h3>
+        <h3 className="text-2xl font-bold gradient-text mb-3">No Experiments Yet</h3>
         <p className="text-gray-600 text-lg">
-          Create your first experiment to start analyzing LLM responses ✨
+          Create your first experiment to start analyzing LLM responses.
         </p>
       </div>
     );
@@ -68,16 +65,14 @@ export default function ExperimentHistory({
       <div className="flex items-center justify-between glass p-6 rounded-2xl shadow-lg">
         <div>
           <h2 className="text-3xl font-bold gradient-text mb-2">Experiment History</h2>
-          <p className="text-sm text-purple-700 font-medium flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+          <p className="text-sm text-purple-700 font-medium">
             {experiments.length} experiments saved
           </p>
         </div>
         <button
           onClick={onRefresh}
-          className="flex items-center gap-2 px-6 py-3 btn-gradient text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+          className="px-6 py-3 btn-gradient text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
         >
-          <RefreshCw className="w-5 h-5" />
           Refresh
         </button>
       </div>
@@ -104,12 +99,11 @@ export default function ExperimentHistory({
                   </h3>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-2 bg-purple-100 px-3 py-1.5 rounded-full text-purple-700 font-semibold">
-                    <Clock className="w-4 h-4" />
+                  <span className="bg-slate-100 px-3 py-1.5 rounded-full text-slate-700 font-semibold">
                     {formatDate(experiment.created_at)}
                   </span>
-                  <span className="bg-gradient-to-r from-blue-100 to-cyan-100 px-3 py-1.5 rounded-full text-blue-700 font-semibold">
-                    🎯 {experiment.response_count} responses
+                  <span className="bg-gradient-to-r from-slate-100 via-white to-slate-100 px-3 py-1.5 rounded-full text-slate-700 font-semibold border border-slate-200">
+                    {experiment.response_count} responses
                   </span>
                 </div>
               </div>
@@ -118,17 +112,15 @@ export default function ExperimentHistory({
               <div className="flex items-center gap-3 flex-shrink-0">
                 <button
                   onClick={() => handleView(experiment.id)}
-                  className="flex items-center gap-2 px-5 py-3 btn-gradient text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                  className="px-5 py-3 btn-gradient text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
                 >
-                  <Eye className="w-5 h-5" />
                   View
                 </button>
                 <button
                   onClick={() => handleDelete(experiment.id)}
                   disabled={deleteMutation.isPending}
-                  className="flex items-center gap-2 px-5 py-3 btn-gradient-danger text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
+                  className="px-5 py-3 btn-gradient-danger text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
                 >
-                  <Trash2 className="w-5 h-5" />
                   Delete
                 </button>
               </div>
@@ -139,4 +131,3 @@ export default function ExperimentHistory({
     </div>
   );
 }
-
