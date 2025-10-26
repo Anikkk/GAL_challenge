@@ -1,11 +1,11 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteExperiment, getExperiment, type ExperimentListItem } from '@/lib/api';
+import { deleteExperiment, getExperiment, type ExperimentListItem, type ExperimentResponse } from '@/lib/api';
 
 interface ExperimentHistoryProps {
   experiments: ExperimentListItem[];
-  onExperimentSelect: (experiment: any) => void;
+  onExperimentSelect: (experiment: ExperimentResponse) => void;
   onRefresh: () => void;
 }
 

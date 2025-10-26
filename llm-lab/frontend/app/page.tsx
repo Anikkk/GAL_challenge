@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { generateResponses, getExperiments, type GenerateRequest } from '@/lib/api';
+import { generateResponses, getExperiments, type GenerateRequest, type ExperimentResponse } from '@/lib/api';
 import ExperimentForm from '@/components/ExperimentForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import ExperimentHistory from '@/components/ExperimentHistory';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'new' | 'history'>('new');
-  const [currentExperiment, setCurrentExperiment] = useState<any>(null);
+  const [currentExperiment, setCurrentExperiment] = useState<ExperimentResponse | null>(null);
 
   const generateMutation = useMutation({
     mutationFn: generateResponses,
