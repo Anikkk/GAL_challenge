@@ -77,9 +77,9 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
               <div className="relative flex items-start gap-5">
-                <div className="bg-white/15 px-5 py-4 rounded-2xl backdrop-blur-sm flex-shrink-0 text-xs font-semibold uppercase tracking-[0.3em] text-slate-900">
+                {/* <div className="bg-white/15 px-5 py-4 rounded-2xl backdrop-blur-sm flex-shrink-0 text-xs font-semibold uppercase tracking-[0.3em] text-slate-900">
                   Overview
-                </div>
+                </div> */}
                 <div>
                   <h2 className="text-2xl font-black mb-3">
                     Experiment with LLM Parameters
