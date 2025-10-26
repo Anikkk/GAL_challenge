@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Play, Settings, Loader2 } from 'lucide-react';
 import type { GenerateRequest } from '@/lib/api';
 
 interface ExperimentFormProps {
@@ -55,142 +54,187 @@ export default function ExperimentForm({ onSubmit, isLoading }: ExperimentFormPr
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Prompt Input */}
-      <div className="relative">
-        <label htmlFor="prompt" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></span>
-          Your Prompt
-        </label>
-        <div className="relative group">
-          <textarea
-            id="prompt"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your prompt here..."
-            className="w-full h-32 px-4 py-3 border-2 border-purple-200 rounded-xl focus:ring-4 focus:ring-purple-300 focus:border-purple-400 resize-none transition-all duration-300 shadow-sm hover:shadow-md bg-white"
-            required
-            disabled={isLoading}
-          />
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
+    <div className="max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-12">
+        {/* Header Section */}
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Create New Experiment</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Enter your prompt and configure parameters to generate and analyze multiple LLM responses
+          </p>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-            Quick Examples:
-          </span>
-          {examplePrompts.map((example, i) => (
+
+        {/* Main Prompt Section */}
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-10">
+          <div className="space-y-6">
+            {/* Prompt Label */}
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
+              <label htmlFor="prompt" className="text-xl font-bold text-gray-800">
+                Your Prompt
+              </label>
+            </div>
+
+            {/* Prompt Input */}
+            <div className="relative group">
+              <textarea
+                id="prompt"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Enter your prompt here... Be specific about what you want the AI to generate."
+                className="w-full h-40 px-6 py-5 text-lg border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-400 resize-none transition-all duration-300 shadow-sm hover:shadow-md bg-gray-50 focus:bg-white"
+                required
+                disabled={isLoading}
+              />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            </div>
+
+            {/* Character Count */}
+            <div className="flex justify-end">
+              <span className="text-sm text-gray-500 font-medium">
+                {prompt.length} characters
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Examples Section */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100">
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+              <h3 className="text-xl font-bold text-gray-800">Quick Examples</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {examplePrompts.map((example, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => fillExample(example)}
+                  className="p-4 text-left bg-white hover:bg-blue-50 border border-blue-200 rounded-xl transition-all duration-300 text-blue-800 font-medium shadow-sm hover:shadow-md hover:scale-105 hover:border-blue-300"
+                  disabled={isLoading}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <span className="text-sm leading-relaxed">{example}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced Settings Toggle */}
+        <div className="flex justify-center">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
             <button
-              key={i}
               type="button"
-              onClick={() => fillExample(example)}
-              className="text-xs px-3 py-1.5 bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 rounded-full transition-all duration-300 text-purple-800 font-medium shadow-sm hover:shadow-md"
-              disabled={isLoading}
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="toggle-highlight text-lg w-full"
             >
-              {example.slice(0, 30)}...
+              {showAdvanced ? 'Hide Advanced Settings' : 'Show Advanced Settings'}
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Advanced Settings Toggle */}
-      <button
-        type="button"
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-2 text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
-      >
-        <Settings className="w-4 h-4" />
-        {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
-      </button>
-
-      {/* Advanced Settings */}
-      {showAdvanced && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-2xl border-2 border-purple-200 shadow-lg animate-fadeIn">
-          {/* Model Selection */}
-          <div className="relative">
-            <label htmlFor="model" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></span>
-              Model
-            </label>
-            <select
-              id="model"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all shadow-sm hover:shadow-md bg-white cursor-pointer"
-              disabled={isLoading}
-            >
-              <option value="gpt-3.5-turbo">🤖 GPT-3.5 Turbo</option>
-              <option value="gpt-4o-mini">🧠 GPT-4</option>
-              <option value="claude-3-sonnet">🎭 Claude 3 Sonnet</option>
-              <option value="mock">✨ Mock (No API Key Required)</option>
-            </select>
-            <p className="mt-2 text-xs text-purple-700 font-medium">
-              Mock mode generates sample responses without API keys
-            </p>
-          </div>
-
-          {/* Temperature Range */}
-          <div className="relative">
-            <label htmlFor="temperature" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></span>
-              Temperature Values
-            </label>
-            <input
-              id="temperature"
-              type="text"
-              value={temperatureValues}
-              onChange={(e) => setTemperatureValues(e.target.value)}
-              placeholder="0.3, 0.7, 1.0"
-              className="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:ring-4 focus:ring-orange-300 focus:border-orange-400 transition-all shadow-sm hover:shadow-md bg-white"
-              disabled={isLoading}
-            />
-            <p className="mt-2 text-xs text-orange-700 font-medium">
-              🔥 Comma-separated values (0.0 - 2.0). Controls randomness.
-            </p>
-          </div>
-
-          {/* Top P Range */}
-          <div className="relative">
-            <label htmlFor="topP" className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-teal-500"></span>
-              Top P Values
-            </label>
-            <input
-              id="topP"
-              type="text"
-              value={topPValues}
-              onChange={(e) => setTopPValues(e.target.value)}
-              placeholder="0.9, 1.0"
-              className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-300 focus:border-green-400 transition-all shadow-sm hover:shadow-md bg-white"
-              disabled={isLoading}
-            />
-            <p className="mt-2 text-xs text-green-700 font-medium">
-              🎯 Comma-separated values (0.0 - 1.0). Controls diversity.
-            </p>
           </div>
         </div>
-      )}
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isLoading || !prompt.trim()}
-        className="w-full btn-gradient text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-xl disabled:transform-none relative overflow-hidden group"
-      >
-        <div className="absolute inset-0 shine opacity-0 group-hover:opacity-100"></div>
-        {isLoading ? (
-          <>
-            <Loader2 className="w-6 h-6 animate-spin" />
-            Generating Responses...
-          </>
-        ) : (
-          <>
-            <Play className="w-6 h-6" />
-            Generate & Analyze Responses
-          </>
+        {/* Advanced Settings */}
+        {showAdvanced && (
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-10 animate-fadeIn">
+            <div className="space-y-8">
+              <div className="flex items-center space-x-3 mb-8">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
+                <h3 className="text-2xl font-bold text-gray-800">Advanced Configuration</h3>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Model Selection */}
+                <div className="space-y-4">
+                  <label htmlFor="model" className="block text-lg font-bold text-gray-800 flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                    <span>Model</span>
+                  </label>
+                  <select
+                    id="model"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    className="w-full px-5 py-4 text-lg border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all shadow-sm hover:shadow-md bg-white cursor-pointer"
+                    disabled={isLoading}
+                  >
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-4o-mini">GPT-4</option>
+                    <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                    <option value="mock">Mock (No API Key Required)</option>
+                  </select>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Mock mode generates sample responses without API keys
+                  </p>
+                </div>
+
+                {/* Temperature Range */}
+                <div className="space-y-4">
+                  <label htmlFor="temperature" className="block text-lg font-bold text-gray-800 flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
+                    <span>Temperature</span>
+                  </label>
+                  <input
+                    id="temperature"
+                    type="text"
+                    value={temperatureValues}
+                    onChange={(e) => setTemperatureValues(e.target.value)}
+                    placeholder="0.3, 0.7, 1.0"
+                    className="w-full px-5 py-4 text-lg border-2 border-orange-200 rounded-xl focus:ring-4 focus:ring-orange-200 focus:border-orange-400 transition-all shadow-sm hover:shadow-md bg-white"
+                    disabled={isLoading}
+                  />
+                  <p className="text-sm text-gray-600 font-medium">
+                    Controls randomness (0.0 - 2.0)
+                  </p>
+                </div>
+
+                {/* Top P Range */}
+                <div className="space-y-4">
+                  <label htmlFor="topP" className="block text-lg font-bold text-gray-800 flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-teal-500"></div>
+                    <span>Top P</span>
+                  </label>
+                  <input
+                    id="topP"
+                    type="text"
+                    value={topPValues}
+                    onChange={(e) => setTopPValues(e.target.value)}
+                    placeholder="0.9, 1.0"
+                    className="w-full px-5 py-4 text-lg border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-200 focus:border-green-400 transition-all shadow-sm hover:shadow-md bg-white"
+                    disabled={isLoading}
+                  />
+                  <p className="text-sm text-gray-600 font-medium">
+                    Controls diversity (0.0 - 1.0)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
-      </button>
-    </form>
+
+        {/* Submit Button Section */}
+        <div className="flex justify-center pt-8">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <button
+              type="submit"
+              disabled={isLoading || !prompt.trim()}
+              className="primary-action btn-gradient disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none w-full"
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading-spinner" aria-hidden="true"></span>
+                  <span>Generating Responses...</span>
+                </>
+              ) : (
+                <span>Generate &amp; Analyze Responses</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
-
