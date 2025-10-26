@@ -9,6 +9,7 @@ export const api = axios.create({
   },
 });
 
+
 export interface GenerateRequest {
   prompt: string;
   model: string;
