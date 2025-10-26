@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     domains: [],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://gal-challenge-backend.vercel.app/',
+    NEXT_PUBLIC_API_URL: 'https://gal-challenge-backend.vercel.app/',
   },
 };
 
