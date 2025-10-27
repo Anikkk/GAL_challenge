@@ -1,9 +1,22 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 import os
+from pathlib import Path
 
-# Database URL
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./llm_lab.db")
+# Prefer a DATABASE_URL env var. If not provided, create a sqlite file inside
+# a `data/` directory next to the `app` package so we avoid issues with
+# relative working directories and permission problems.
+env_db_url = os.getenv("DATABASE_URL")
+if env_db_url:
+    DATABASE_URL = env_db_url
+else:
+    # place DB under llm-lab/backend/data/llm_lab.db
+    app_dir = Path(__file__).resolve().parent
+    backend_dir = app_dir.parent
+    data_dir = backend_dir / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    db_file = data_dir / "llm_lab.db"
+    DATABASE_URL = f"sqlite+aiosqlite:///{db_file}"
 
 # Create async engine
 engine = create_async_engine(DATABASE_URL, echo=True)
