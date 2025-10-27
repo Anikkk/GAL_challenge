@@ -11,7 +11,7 @@ import json
 import csv
 import io
 
-from app.database import get_db, init_db
+from app.database import get_db
 from app.models import Experiment, Response
 from app.schemas import (
     GenerateRequest,
@@ -44,12 +44,6 @@ app.add_middleware(
 llm_service = LLMService()
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize database on startup"""
-    await init_db()
-
-
 @app.get("/")
 async def root():
     """Health check endpoint"""
@@ -71,19 +65,13 @@ async def health_check():
 
 
 @app.post("/api/generate", response_model=ExperimentResponse)
-async def generate_responses(
-    request: GenerateRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def generate_responses(request: GenerateRequest):
     """
     Generate multiple LLM responses with different parameter combinations.
     Calculates quality metrics for each response.
     """
     try:
-        # Create new experiment
-        experiment = Experiment(prompt=request.prompt)
-        db.add(experiment)
-        await db.flush()
+        from datetime import datetime
         
         # Generate responses with different parameter combinations
         responses_data = await llm_service.generate_multiple_responses(
@@ -95,54 +83,45 @@ async def generate_responses(
         
         # Process each response and calculate metrics
         response_objects = []
-        for temp, top_p, content in responses_data:
+        for idx, (temp, top_p, content) in enumerate(responses_data, 1):
             # Calculate quality metrics
             metrics = ResponseMetrics.calculate_all_metrics(content)
             metrics['overall_score'] = ResponseMetrics.calculate_overall_score(metrics)
             
-            # Create response object
-            response_obj = Response(
-                experiment_id=experiment.id,
-                temperature=temp,
-                top_p=top_p,
-                model=request.model,
-                content=content,
-                metrics=metrics
-            )
-            db.add(response_obj)
+            # Create response object (in-memory only, no DB)
+            response_obj = {
+                'id': idx,
+                'temperature': temp,
+                'top_p': top_p,
+                'model': request.model,
+                'content': content,
+                'metrics': metrics,
+                'created_at': datetime.utcnow()
+            }
             response_objects.append(response_obj)
 
-        print(f"Generated {len(response_objects)} responses for experiment ID {experiment.id}")
+        print(f"Generated {len(response_objects)} responses")
         
-        # Commit to database
-        await db.commit()
-        
-        # Refresh objects to get IDs
-        await db.refresh(experiment)
-        for resp in response_objects:
-            await db.refresh(resp)
-        
-        # Convert to response schema
+        # Return response without saving to database
         return ExperimentResponse(
-            id=experiment.id,
-            prompt=experiment.prompt,
-            created_at=experiment.created_at,
+            id=1,
+            prompt=request.prompt,
+            created_at=datetime.utcnow(),
             responses=[
                 ResponseData(
-                    id=resp.id,
-                    temperature=resp.temperature,
-                    top_p=resp.top_p,
-                    model=resp.model,
-                    content=resp.content,
-                    metrics=ResponseMetricsSchema(**resp.metrics) if resp.metrics else None,
-                    created_at=resp.created_at
+                    id=resp['id'],
+                    temperature=resp['temperature'],
+                    top_p=resp['top_p'],
+                    model=resp['model'],
+                    content=resp['content'],
+                    metrics=ResponseMetricsSchema(**resp['metrics']) if resp['metrics'] else None,
+                    created_at=resp['created_at']
                 )
                 for resp in response_objects
             ]
         )
     
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=f"Error generating responses: {str(e)}")
 
 
