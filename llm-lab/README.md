@@ -188,13 +188,6 @@ Open your browser and navigate to:
 - **Individual Metrics**: Progress bars for each quality metric
 - **Response Content**: Full text of selected response
 
-### Managing Experiments
-
-- **History Tab**: View all past experiments
-- **View Button**: Load and analyze previous experiments
-- **Delete Button**: Remove experiments from database
-- **Export Button**: Download experiment data as JSON
-
 ```
 
 
